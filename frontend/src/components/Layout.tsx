@@ -7,9 +7,9 @@ const Layout: React.FC = () => {
     const [showSplash, setShowSplash] = useState(true);
 
     // Hide splash after it finishes
-    const handleSplashFinish = () => {
+    const handleSplashFinish = React.useCallback(() => {
         setShowSplash(false);
-    };
+    }, []);
 
     // Hide menu explicitly on Detail and Checkout pages
 

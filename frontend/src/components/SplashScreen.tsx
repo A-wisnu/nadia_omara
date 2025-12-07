@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 const SplashScreen: React.FC<{ onFinish: () => void }> = ({ onFinish }) => {
     // Stage: 'start' -> 'credits-in' -> 'credits-out' -> 'logo-in' -> 'logo-out' -> 'final-fade' -> 'done'
@@ -12,9 +12,19 @@ const SplashScreen: React.FC<{ onFinish: () => void }> = ({ onFinish }) => {
         "Alysiya Ramadhani (231240001453)"
     ];
 
-    useEffect(() => {
-        // Timeline Sequence
+    const onFinishRef = useRef(onFinish);
 
+    // Keep ref updated
+    useEffect(() => {
+        onFinishRef.current = onFinish;
+    }, [onFinish]);
+
+    useEffect(() => {
+        // Preload Logo
+        const img = new Image();
+        img.src = "/logo.png";
+
+        // Timeline Sequence
         // 0ms: Start (White Screen)
         const t1 = setTimeout(() => setStage('credits-in'), 100);
 
@@ -33,7 +43,7 @@ const SplashScreen: React.FC<{ onFinish: () => void }> = ({ onFinish }) => {
         // 9000ms: Remove Component
         const t6 = setTimeout(() => {
             setStage('done');
-            onFinish();
+            if (onFinishRef.current) onFinishRef.current();
         }, 9000);
 
         return () => {
@@ -44,7 +54,7 @@ const SplashScreen: React.FC<{ onFinish: () => void }> = ({ onFinish }) => {
             clearTimeout(t5);
             clearTimeout(t6);
         };
-    }, [onFinish]);
+    }, []); // Empty dependency array ensures this runs strict once on mount
 
     if (stage === 'done') return null;
 
